@@ -1,0 +1,35 @@
+BEGIN TRY
+
+BEGIN TRAN;
+
+-- CreateTable
+CREATE TABLE [dbo].[Files] (
+    [id] NVARCHAR(1000) NOT NULL,
+    [name] NVARCHAR(1000) NOT NULL,
+    [originalName] NVARCHAR(1000) NOT NULL,
+    [path] NVARCHAR(1000) NOT NULL,
+    [contentType] NVARCHAR(1000) NOT NULL,
+    [fileLength] NVARCHAR(1000) NOT NULL,
+    [referenceObjId] NVARCHAR(1000) NOT NULL,
+    [appSource] NVARCHAR(1000) NOT NULL,
+    [isDeleted] BIT NOT NULL CONSTRAINT [Files_isDeleted_df] DEFAULT 0,
+    [createdBy] NVARCHAR(1000) NOT NULL CONSTRAINT [Files_createdBy_df] DEFAULT 'SISTEMA',
+    [updatedBy] NVARCHAR(1000) NOT NULL CONSTRAINT [Files_updatedBy_df] DEFAULT 'SISTEMA',
+    [createdAt] DATETIME2 NOT NULL CONSTRAINT [Files_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
+    [updatedAt] DATETIME2 NOT NULL,
+    CONSTRAINT [Files_pkey] PRIMARY KEY CLUSTERED ([id]),
+    CONSTRAINT [Files_name_key] UNIQUE NONCLUSTERED ([name])
+);
+
+COMMIT TRAN;
+
+END TRY
+BEGIN CATCH
+
+IF @@TRANCOUNT > 0
+BEGIN
+    ROLLBACK TRAN;
+END;
+THROW
+
+END CATCH
