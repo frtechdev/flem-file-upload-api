@@ -53,7 +53,7 @@
 
 
     <title>
-      pages/api/[appSource]/downloadFile.js
+      pages/api/[appSource]/indexFile.js
     </title>
 
     <!--[if lt IE 9]>
@@ -109,7 +109,7 @@
   <body>
 
     <nav class="navbar" id="navbar">
-      <div class="navbar-heading" id="navbar-heading"><a href="index.html"><h2 class="navbar-heading-text">FLEM File Upload API - Documentação</h2></a></div><div class="search-box" id="search-box"><div class="search-box-input-container"><input class="search-box-input" type="text" placeholder="Search..." id="search-box-input" /><svg class="search-icon" alt="search-icon"><use xlink:href="#search-icon"></use></svg></div><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-main-content" id="sidebar-main-content"><ul><li class="menu-li"><a href='https://frtechnologies.com.br' class='some-class menu-link' id='some-id' target='_blank'>Website</a></li><li class="menu-li"><a href='https://github.com/frtechdev/flem-file-upload-api/' class='some-class menu-link' id='some-id' target='_blank'>Github</a></li></ul><div class="accordion collapsed" id="3169806" > <h3 class="accordion-heading">Global<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion-list" id=""><a href="global.html#apiAllowCors">apiAllowCors</a></li><li class="accordion-list" id=""><a href="global.html#getFile">getFile</a></li><li class="accordion-list" id=""><a href="global.html#getFileDetails">getFileDetails</a></li><li class="accordion-list" id=""><a href="global.html#handler">handler</a></li><li class="accordion-list" id=""><a href="global.html#indexFile">indexFile</a></li><li class="accordion-list" id=""><a href="global.html#prisma">prisma</a></li><li class="accordion-list" id=""><a href="global.html#upload">upload</a></li><li class="accordion-list" id=""><a href="global.html#uploadFile">uploadFile</a></li></ul> </div>
+      <div class="navbar-heading" id="navbar-heading"><a href="index.html"><h2 class="navbar-heading-text">FLEM File Upload API - Documentação</h2></a></div><div class="search-box" id="search-box"><div class="search-box-input-container"><input class="search-box-input" type="text" placeholder="Search..." id="search-box-input" /><svg class="search-icon" alt="search-icon"><use xlink:href="#search-icon"></use></svg></div><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-main-content" id="sidebar-main-content"><ul><li class="menu-li"><a href='https://frtechnologies.com.br' class='some-class menu-link' id='some-id' target='_blank'>Website</a></li><li class="menu-li"><a href='https://github.com/frtechdev/flem-file-upload-api/' class='some-class menu-link' id='some-id' target='_blank'>Github</a></li></ul><div class="accordion collapsed" id="7457723" > <h3 class="accordion-heading">Global<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion-list" id=""><a href="global.html#apiAllowCors">apiAllowCors</a></li><li class="accordion-list" id=""><a href="global.html#getFile">getFile</a></li><li class="accordion-list" id=""><a href="global.html#getFileDetails">getFileDetails</a></li><li class="accordion-list" id=""><a href="global.html#handler">handler</a></li><li class="accordion-list" id=""><a href="global.html#indexFile">indexFile</a></li><li class="accordion-list" id=""><a href="global.html#prisma">prisma</a></li><li class="accordion-list" id=""><a href="global.html#upload">upload</a></li><li class="accordion-list" id=""><a href="global.html#uploadFile">uploadFile</a></li></ul> </div>
       
         <div class="navbar-resize" id="navbar-resize">
           <div class="resize-dots-container">
@@ -132,7 +132,7 @@
     <div id="main" class="main-content">
       
       <h1 id='page-title' class="page-title">
-        pages/api/[appSource]/downloadFile.js
+        pages/api/[appSource]/indexFile.js
       </h1>
       
 
@@ -145,6 +145,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>import { apiAllowCors, prisma } from "services";
 import fs from "fs";
+import getFileDetails from "./getFileDetails";
 
 /**
  * Handler de Requisição da Rota.
@@ -153,61 +154,88 @@ import fs from "fs";
  */
 const handler = async (req, res) => {
   switch (req.method) {
-    case "GET":
-      await getFile(req, res);
+    case "PATCH":
+      await indexFile(req, res);
       break;
+
     default:
-      res.status(405).send({ message: "Only GET requests allowed" });
+      res.status(405).send({ message: "Only PATCH requests allowed" });
       break;
   }
 };
+
 export default apiAllowCors(handler);
 
 
 /**
- * Recebe a requisição do arquivo a ser baixado, acessa o BD para trazer
- * o arquivo com suas referências e o retorna.
+ * Realiza a indexação do arquivo.
+ * Ao realizar um upload, o arquivo possui um Objeto de Referência padrão ou nulo.
+ * Esse método atualiza no BD as informações de referenceObjId com o referenceObjId gerado
+ * ao realizar o upload, cria um diretório dentro do servidor de armazenamento com o nome apropriado,
+ * e atualiza essas informações no BD.
  * @param {*} req HTTP Request
  * @param {*} res HTTP Response 
  * @param {*} fileId ID do arquivo a ser enviado
  * @param {*} referenceObjId ID de referência do objeto a ser enviado
- * @returns {File} Arquivo solicitado
+ * @returns {*} Detalhes do arquivo com as informações atualizadas
  */
-const getFile = async (req, res) => {
+const indexFile = async (req, res) => {
   try {
-    const { fileId, referenceObjId } = req.query;
+    const { fileId } = req.query;
+    const { referenceObj } = req.body;
 
-    // RETORNA ERRO NA AUSÊNCIA DE PARÂMETROS
-    if (!fileId &amp;&amp; !referenceObjId)
-      return res.status(400).json({
-        status: 400,
-        message: "fileId or referenceObjId is required!",
-      });
+    // // RETORNA ERRO NA AUSÊNCIA DE PARÂMETROS
+    // if (!fileId &amp;&amp; !referenceObjId)
+    //   return res.status(400).json({
+    //     status: 400,
+    //     message: "fileId or referenceObjId is required!",
+    //   });
 
-      // REQUISIÇÃO AO BANCO DE DADOS
-    const fileDetails = await prisma.files.findFirst({
+    // // CONSULTA DADOS DE REFERÊNCIA DO ARQUIVO
+    // const getFileDetails = await prisma.files.findFirst({
+    //   where: {
+    //     id: fileId,
+    //   },
+    // });
+
+    // if (!getFileDetails)
+    //   return res.status(400).json({ status: 400, message: "file not found!" });
+
+    const fileDetails = getFileDetails(req, res);
+
+    const oldPath = fileDetails.path;
+
+    const destPath = fileDetails.path
+      .replace(fileDetails.referenceObjId, referenceObj.id)
+      .replace(fileDetails.name, "");
+
+    const newPath = fileDetails.path.replace(
+      fileDetails.referenceObjId,
+      referenceObj.id
+    );
+
+    if (!fs.existsSync(destPath)) {
+      await fs.promises.mkdir(destPath, { recursive: true });
+    }
+
+    const moveFile = await fs.promises.rename(oldPath, newPath);
+
+    const updateFileDetails = await prisma.files.update({
+      data: {
+        referenceObjId: referenceObj.id,
+        path: newPath,
+      },
       where: {
         id: fileId,
-        referenceObjId: referenceObjId,
       },
     });
-
-    // RETORNA MENSAGEM CASO ARQUIVO ESTEJA AUSENTE
-    if (!fileDetails)
-      return res.status(400).json({ status: 400, message: "file not found!" });
-
-    // LÊ O ARQUIVO
-    const file = await fs.promises.readFile(fileDetails.path);
-    res.setHeader("filename", encodeURI(fileDetails.name));
-    res.setHeader("file-content-type", fileDetails.contentType);
-
-    return res.status(200).send(file);
+    
+    return res.status(200).json(updateFileDetails);
   } catch (e) {
     console.log(e);
     return res.status(500).json(e.message);
   }
 };
-
 </code></pre>
         </article>
     </section>

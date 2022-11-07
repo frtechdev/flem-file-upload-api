@@ -53,7 +53,7 @@
 
 
     <title>
-      pages/api/index.js
+      controllers/upload/index.js
     </title>
 
     <!--[if lt IE 9]>
@@ -109,7 +109,7 @@
   <body>
 
     <nav class="navbar" id="navbar">
-      <div class="navbar-heading" id="navbar-heading"><a href="index.html"><h2 class="navbar-heading-text">FLEM File Upload API - Documentação</h2></a></div><div class="search-box" id="search-box"><div class="search-box-input-container"><input class="search-box-input" type="text" placeholder="Search..." id="search-box-input" /><svg class="search-icon" alt="search-icon"><use xlink:href="#search-icon"></use></svg></div><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-main-content" id="sidebar-main-content"><ul><li class="menu-li"><a href='https://frtechnologies.com.br' class='some-class menu-link' id='some-id' target='_blank'>Website</a></li><li class="menu-li"><a href='https://github.com/frtechdev/flem-file-upload-api/' class='some-class menu-link' id='some-id' target='_blank'>Github</a></li></ul><div class="accordion collapsed" id="3169806" > <h3 class="accordion-heading">Global<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion-list" id=""><a href="global.html#apiAllowCors">apiAllowCors</a></li><li class="accordion-list" id=""><a href="global.html#getFile">getFile</a></li><li class="accordion-list" id=""><a href="global.html#getFileDetails">getFileDetails</a></li><li class="accordion-list" id=""><a href="global.html#handler">handler</a></li><li class="accordion-list" id=""><a href="global.html#indexFile">indexFile</a></li><li class="accordion-list" id=""><a href="global.html#prisma">prisma</a></li><li class="accordion-list" id=""><a href="global.html#upload">upload</a></li><li class="accordion-list" id=""><a href="global.html#uploadFile">uploadFile</a></li></ul> </div>
+      <div class="navbar-heading" id="navbar-heading"><a href="index.html"><h2 class="navbar-heading-text">FLEM File Upload API - Documentação</h2></a></div><div class="search-box" id="search-box"><div class="search-box-input-container"><input class="search-box-input" type="text" placeholder="Search..." id="search-box-input" /><svg class="search-icon" alt="search-icon"><use xlink:href="#search-icon"></use></svg></div><div class="search-item-container" id="search-item-container"><ul class="search-item-ul" id="search-item-ul"></ul></div></div><div class="sidebar-main-content" id="sidebar-main-content"><ul><li class="menu-li"><a href='https://frtechnologies.com.br' class='some-class menu-link' id='some-id' target='_blank'>Website</a></li><li class="menu-li"><a href='https://github.com/frtechdev/flem-file-upload-api/' class='some-class menu-link' id='some-id' target='_blank'>Github</a></li></ul><div class="accordion collapsed" id="7457723" > <h3 class="accordion-heading">Global<svg><use xlink:href="#down-icon"></use></svg></h3><ul class="accordion-content"><li class="accordion-list" id=""><a href="global.html#apiAllowCors">apiAllowCors</a></li><li class="accordion-list" id=""><a href="global.html#getFile">getFile</a></li><li class="accordion-list" id=""><a href="global.html#getFileDetails">getFileDetails</a></li><li class="accordion-list" id=""><a href="global.html#handler">handler</a></li><li class="accordion-list" id=""><a href="global.html#indexFile">indexFile</a></li><li class="accordion-list" id=""><a href="global.html#prisma">prisma</a></li><li class="accordion-list" id=""><a href="global.html#upload">upload</a></li><li class="accordion-list" id=""><a href="global.html#uploadFile">uploadFile</a></li></ul> </div>
       
         <div class="navbar-resize" id="navbar-resize">
           <div class="resize-dots-container">
@@ -132,7 +132,7 @@
     <div id="main" class="main-content">
       
       <h1 id='page-title' class="page-title">
-        pages/api/index.js
+        controllers/upload/index.js
       </h1>
       
 
@@ -143,26 +143,66 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>
+            <pre class="prettyprint source linenums"><code>import multer from "multer";
+import fs from "fs";
+import { DateTime } from "luxon";
+import { prisma } from "services";
+import path from "path";
+
 /**
- * Rota de redirecionamento para a documentação
- * do jsdoc. Altera o título do documento, visto que
- * a biblioteca jsdoc não possui suporte nativo para
- * esta função.
- * @param {Object} req HTTP request.
- * @param {Object} res HTTP response.
+ * Função básica de Upload.
+ * Recebe o arquivo, define as propriedades e o armazena em local temporário.
+ * @param appSource nome da aplicação de origem da transferência de arquivo
+ * @param referenceObjId ID do objeto de referência (padrão: "temp")
+ * @param req Requisição HTTP de origem da transferência de arquivo
+ * @param cb Função de Callback
  */
-export default async function api(req, res) {
-const fs = require('fs').promises;
-const docsIndex = "public/index.html";
-const docsTitle = "FLEM File Upload API";
-const fileDocsIndex = await fs.readFile(docsIndex, 'utf8');
-const formattedDocsIndex = fileDocsIndex.replace(/Home/g, docsTitle);
-await fs.writeFile(docsIndex, formattedDocsIndex, "utf-8");
-res.setHeader("Content-Type", "text/html; charset=utf-8");
-res.write(formattedDocsIndex);
-res.end();
-}</code></pre>
+export const upload = multer({
+  storage: multer.diskStorage({
+    //DEFINE DESTINO DO ARQUIVO
+    destination: async (req, file, cb) => {
+      const { appSource, referenceObjId = "temp" } = req.query;
+      //LOCAL DE ARMAZENAMENTO DO ARQUIVO
+      const dest = `${process.env.NEXT_PUBLIC_API_FILESERVER_STORAGE_UPLOAD}/${appSource}/${DateTime.now()
+        .setLocale("pt-BR")
+        .toFormat("yyyy/MM/dd")}/${referenceObjId}`;
+      if (!fs.existsSync(dest)) {
+        fs.mkdirSync(dest, { recursive: true });
+      }
+      req.dest = dest;
+      // req.referenceObjId = referenceObjId;
+      // req.fileCatalogList = [];
+
+      return cb(null, dest);
+    },
+    // DEFINE NOME DO ARQUIVO
+    filename: async (req, file, cb) => {
+      const id = DateTime.now().toFormat("HHmmss");
+      const { appSource, referenceObjId = "temp" } = req.query;
+
+      return cb(null, `${id}_${file.originalname}`);
+    },
+  }),
+
+  //VERIFICA SE O ARQUIVO JÁ EXISTE PELO ÍNDICE DO BD E RETORNA ERRO EM CASO POSITIVO
+  fileFilter: async (req, file, cb) => {
+    file.originalname = Buffer.from(file.originalname, "latin1").toString(
+      "utf8"
+    );
+    const checkFileExists = await prisma.files.findFirst({
+      where: {
+        name: file.originalname,
+      },
+    });
+
+    if (checkFileExists !== null) {
+      return cb(null, false);
+    }
+
+    return cb(null, true);
+  },
+});
+</code></pre>
         </article>
     </section>
 
