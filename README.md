@@ -5,15 +5,15 @@
 
 <div align="center">
 
-<a href="">[![Alerts](https://img.shields.io/lgtm/alerts/github/frtechdev/flem-file-upload-api)](https://github.com/frtechdev/flem-file-upload-api) </a>
-<a href="">[![Grade](https://img.shields.io/lgtm/grade/javascript/github/frtechdev/flem-file-upload-api)](https://github.com/frtechdev/flem-file-upload-api)</a>
-<a href="">[![Code Size](https://img.shields.io/github/languages/code-size/frtechdev/flem-file-upload-api)](https://github.com/frtechdev/flem-file-upload-api)</a>
-<a href="">[![Repo Size](https://img.shields.io/github/repo-size/frtechdev/flem-file-upload-api)](https://github.com/frtechdev/flem-file-upload-api)</a>
+<a href="">![Known Vulnerabilities](https://snyk.io/test/github/frtechdev/flem-file-upload-api/badge.svg)</a>
+<a href="">![Code Size](https://img.shields.io/github/languages/code-size/frtechdev/flem-file-upload-api)</a>
+<a href="">![Repo Size](https://img.shields.io/github/repo-size/frtechdev/flem-file-upload-api)</a>
 <a href="">[![Contributors](https://img.shields.io/github/contributors/frtechdev/flem-file-upload-api)](https://github.com/frtechdev/flem-file-upload-api/graphs/contributors)</a><br>
-<a href="">[![Last Commit](https://img.shields.io/github/last-commit/frtechdev/flem-file-upload-api)](https://github.com/frtechdev/flem-file-upload-api/) </a>
+<a href="">![Last Commit](https://img.shields.io/github/last-commit/frtechdev/flem-file-upload-api)</a>
 <a href="">[![Fork](https://img.shields.io/github/forks/frtechdev/flem-file-upload-api)](https://github.com/frtechdev/flem-file-upload-api/fork) </a>
-<a href="">![Version](https://img.shields.io/badge/version-1.0.0-005bff) </a>
+<a href="">![Version](https://img.shields.io/badge/version-1.0.1-005bff) </a>
 <a href="">[![license](https://img.shields.io/github/license/frtechdev/flem-file-upload-api)](https://github.com/frtechdev/flem-file-upload-api/LICENSE)</a>
+
 <br>
 
 </div>
@@ -204,6 +204,13 @@ Para testar a aplicação, realize uma requisição HTTP utilizando uma Platafor
 ## Notas de versão
 
 </a>
+
+<br>
+
+### v1.0.1-221107
+
+- Ajuste para utilização do [Snyk](https://snyk.io) como plataforma de avaliação de segurança e Lifecycle
+- Atualização da Documentação
 
 <br>
 
