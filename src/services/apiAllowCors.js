@@ -1,9 +1,9 @@
 /**
  * Utilitário para dar override sobre erro do CORS com direcionamentos HTTP.
  * @param {Function} fn função contendo a requisição ou o objeto da rota.
- * @returns rota já trabalhada com os headers de segurança
+ * @returns {Function} rota já trabalhada com os headers de segurança
  */
-export const apiAllowCors = (fn) => async (req, res) => {
+const apiAllowCors = (fn) => async (req, res) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader("Access-Control-Allow-Origin", "*");
   // another common pattern
@@ -22,3 +22,5 @@ export const apiAllowCors = (fn) => async (req, res) => {
   }
   return await fn(req, res);
 };
+
+export { apiAllowCors };

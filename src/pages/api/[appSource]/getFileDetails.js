@@ -28,9 +28,9 @@ export default apiAllowCors(handler);
  * @param {*} fileId ID do arquivo a ser enviado
  * @param {*} referenceObjId ID de referência do objeto a ser enviado
  * @param {*} appSource nome da aplicação de origem da transferência de arquivo
- * @returns {*} Detalhamento das informações do arquivo
+ * @returns {Object} Detalhamento das informações do arquivo
  */
-export const getFileDetails = async (req, res) => {
+const getFileDetails = async (req, res) => {
   try {
     const { fileId, referenceObjId } = req.query;
 
@@ -59,3 +59,5 @@ export const getFileDetails = async (req, res) => {
     return res.status(500).json(e.message);
   }
 };
+
+export {getFileDetails};

@@ -1,6 +1,6 @@
 {
   "name": "flem-file-upload-api",
-  "version": "1.0.1-221107",
+  "version": "1.0.2-221111",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -10,7 +10,9 @@
     "start": "next start",
     "lint": "next lint",
     "db-push:dev": "dotenv -e .env.development -- yarn prisma db push",
-    "studio:dev": "dotenv -e .env.development -- yarn prisma studio"
+    "studio:dev": "dotenv -e .env.development -- yarn prisma studio",
+    "docker:build:latest": "docker build . -t ghcr.io/frtechdev/flem-mail-api:latest",
+    "docker:push:latest": "docker push ghcr.io/frtechdev/flem-mail-api:latest"
   },
   "dependencies": {
     "luxon": "^3.0.4",
