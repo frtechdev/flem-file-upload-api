@@ -22,6 +22,9 @@ export default apiAllowCors(handler);
 /**
  * Recebe a requisição do arquivo a ser baixado, acessa o BD para trazer
  * o arquivo com suas referências e o retorna.
+ * 
+ * Exemplo: http://localhost:3000/api/Teste/downloadFile?fileId='2rdr454t365'&referenceObjId='3354f45'
+ * 
  * @param {*} req HTTP Request
  * @param {*} res HTTP Response 
  * @param {*} fileId ID do arquivo a ser enviado

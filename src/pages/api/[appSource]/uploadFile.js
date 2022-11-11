@@ -22,6 +22,9 @@ export default apiAllowCors(handler);
 /**
  * Recebe o arquivo e faz o upload do mesmo, adicionando informações no BD e armazenando
  * o arquivo.
+ * 
+ * Exemplo: http://localhost:3000/api/Teste/uploadFile?referenceObjId='3354f45'
+ * 
  * @param {*} req HTTP Request
  * @param {*} res HTTP Response
  * @param {*} appSource nome da aplicação de origem da transferência de arquivo
@@ -39,6 +42,7 @@ const uploadFile = async (req, res) => {
         .json({ status: 400, message: "appSource is required!" });
 
     // MIDDLEWARE PARA VERIFICAR SE A REQUISIÇÃO E OS ARQUIVOS SÃO VÁLIDOS
+    // APÓS ISSO, REALIZA UM UPLOAD
     await runMiddleware(req, res, upload.array("files"));
 
     const { files } = req;

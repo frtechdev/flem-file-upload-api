@@ -1,3 +1,5 @@
+
+// MIDDLEWARE DE VALIDAÇÃO
 export const runMiddleware = (req, res, fn) => {
   return new Promise((resolve, reject) => {
     fn(req, res, (result) => {

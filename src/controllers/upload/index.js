@@ -7,12 +7,12 @@ import path from "path";
 /**
  * Função básica de Upload.
  * Recebe o arquivo, define as propriedades e o armazena em local temporário.
- * @param appSource nome da aplicação de origem da transferência de arquivo
- * @param referenceObjId ID do objeto de referência (padrão: "temp")
- * @param req Requisição HTTP de origem da transferência de arquivo
- * @param cb Função de Callback
+ * @param {*} appSource nome da aplicação de origem da transferência de arquivo
+ * @param {*} referenceObjId ID do objeto de referência (padrão: "temp")
+ * @param {*} req Requisição HTTP de origem da transferência de arquivo
+ * @returns {Function} Função de Callback
  */
-export const upload = multer({
+const upload = multer({
   storage: multer.diskStorage({
     //DEFINE DESTINO DO ARQUIVO
     destination: async (req, file, cb) => {
@@ -33,7 +33,7 @@ export const upload = multer({
     // DEFINE NOME DO ARQUIVO
     filename: async (req, file, cb) => {
       const id = DateTime.now().toFormat("HHmmss");
-      const { appSource, referenceObjId = "temp" } = req.query;
+      //const { appSource, referenceObjId = "temp" } = req.query;
 
       return cb(null, `${id}_${file.originalname}`);
     },
@@ -57,3 +57,5 @@ export const upload = multer({
     return cb(null, true);
   },
 });
+
+export {upload};

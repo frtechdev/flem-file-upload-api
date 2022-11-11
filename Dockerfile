@@ -7,6 +7,7 @@ COPY . .
 
 RUN yarn install --frozen-lockfile
 RUN yarn prisma generate
+
 EXPOSE 3000
 
 ENV PORT 3000
