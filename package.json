@@ -15,7 +15,7 @@
     "docker:push:latest": "docker push ghcr.io/frtechdev/flem-mail-api:latest"
   },
   "dependencies": {
-    "luxon": "^3.0.4",
+    "luxon": "^3.2.1",
     "multer": "^1.4.5-lts.1",
     "next": "12.3.1",
     "next-connect": "^0.13.0",
